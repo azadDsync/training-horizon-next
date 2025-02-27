@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import SearchSection from "../UserFlow/SeachSection";
+import SearchSection from "../UserFlow/SearchSection";
 import RentalCard from "./RentalCard";
 
 interface Address {

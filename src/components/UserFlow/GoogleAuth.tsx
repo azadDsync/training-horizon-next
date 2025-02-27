@@ -25,7 +25,7 @@ const GoogleAuth = () => {
   return (
     <>
     <center>
-        or
+        <div className="mb-2 font-bold">or</div>
     <GoogleLogin
           onSuccess={(credentialResponse) => {
             if(credentialResponse.credential){

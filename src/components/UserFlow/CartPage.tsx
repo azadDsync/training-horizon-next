@@ -2,6 +2,7 @@
 
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 
 type ListingDetails = {
@@ -46,6 +47,9 @@ type CartItem = {
 const CartPage = () => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [cartCount, setCartCount] = useState<number>(0);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   // Fetch cart from backend
   useEffect(() => {
@@ -66,6 +70,7 @@ const CartPage = () => {
         setCartCount(response.data.cart.length);
       } catch (error) {
         console.error("Error fetching cart:", error);
+        setError("Error fetching cart. Please try again later.");
       }
     };
     fetchCart();
@@ -100,6 +105,7 @@ const CartPage = () => {
       window.dispatchEvent(new Event("cart-updated"));
     } catch (error) {
       console.error("Error deleting cart item:", error);
+      setError("Error deleting cart item. Please try again later.");
     }
   };
 
@@ -137,13 +143,15 @@ const CartPage = () => {
     };
 
     try {
+      setLoading(true);
+      // Create new order
       const orderResponse = await axios.post(
         `${process.env.NEXT_PUBLIC_BASE_URL}/order/checkout`,
         orderData,
         { headers: { Authorization: "Bearer " + token } }
       );
       if (orderResponse.status === 201) {
-        alert("Order created successfully!");
+        // Extract the new order's ID.
         const newOrderId = orderResponse.data._id;
         // Update user's orders array
         await axios.put(
@@ -151,20 +159,40 @@ const CartPage = () => {
           { orderId: newOrderId },
           { headers: { Authorization: "Bearer " + token } }
         );
-        // Clear the cart
+        // Clear the cart on the server.
         await axios.delete(`${process.env.NEXT_PUBLIC_BASE_URL}/user/cart/clear`, {
           headers: { Authorization: "Bearer " + token },
         });
+        // Update local state.
         setCartItems([]);
         setCartCount(0);
         window.dispatchEvent(new Event("cart-updated"));
+        // Redirect to the new order details page.
+        router.push(`/userflow/orderdetails/${newOrderId}`);
       }
     } catch (error: any) {
       console.error("Error creating order:", error.response?.data || error);
       alert("Error creating order.");
+    } finally {
+      setLoading(false);
     }
-    
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <p className="text-xl text-gray-600">Loading...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <p className="text-xl text-red-500">{error}</p>
+      </div>
+    );
+  }
 
   if (cartItems.length === 0) {
     return (
@@ -186,13 +214,13 @@ const CartPage = () => {
             key={index}
             className="flex items-start gap-4 p-6 border-b last:border-none"
           >
-            <Image
+            {/* <Image
               src={"/img/p1.svg"}
               alt={item.listing.title}
               height={32}
               width={32}
               className="w-32 h-32 p-2 object-cover border rounded-md"
-            />
+            /> */}
             <div className="flex-1">
               <h3 className="text-lg font-semibold">{item.listing.title}</h3>
               <p className="text-gray-600">Size: {item.listing.classSize}</p>

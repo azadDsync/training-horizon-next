@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 // import Card from "@/components/trainer-dashboard/Card";
 import Image from "next/image";
-import kirillmenko from "@/data/teachers/kirill";
 import { useParams } from "next/navigation";
 import Navbar from "@/components/UserFlow/NavBar";
 
@@ -20,22 +19,13 @@ interface TrainerData {
   about: string;
   workHistory: string;
   educationDetail: string;
+  imageUrl: string;
 }
 
 const TeacherPf: React.FC = ({
-  name,
-  email,
-  mobileNo,
-  teacherId,
-  location,
-  imageUrl,
-  about,
-  workHistory,
-  education,
-  linkedin,
 }: any) => {
   const { id } = useParams<{ id: string }>();
-  console.log(id);
+  const [getImageUrl, setImageUrl] = useState("/img/loading.gif");
   const [trainer, setTrainer] = useState<TrainerData | null>(null);
   useEffect(() => {
     const fetchData = async () => {
@@ -45,12 +35,26 @@ const TeacherPf: React.FC = ({
         );
         // console.log(response.data.trainer);
         setTrainer(response.data.trainer);
-        // console.log(data);
+        fetchImage(response.data.trainer.imageUrl)
+
       } catch (error) {
         console.log("error");
       }
     };
 
+    const fetchImage = async (imageUrl: string) => {
+      try {
+        const response2 = await fetch(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/upload?imageUrl=${imageUrl}`
+        );
+        if (!response2.ok) throw new Error("Failed to fetch signed URL");
+
+        const data = await response2.json();
+        setImageUrl(data.signedUrl);
+      } catch (error) { }
+
+
+    }
     fetchData();
   }, [id]);
 
@@ -76,7 +80,7 @@ const TeacherPf: React.FC = ({
             <Image
               alt="Teacher"
               className="rounded-full h-[180px] w-[180px] md:h-[230px] md:w-[230px] mx-auto mb-5 object-cover"
-              src={kirillmenko.imageUrl}
+              src={getImageUrl}
               width={230}
               height={230}
             />
@@ -212,16 +216,16 @@ const TeacherPf: React.FC = ({
             <p className="text-lg md:text-xl font-semibold">
               About {trainer.fname}
             </p>
-            <p className="text-gray-600 mt-2 w-full">{trainer.about}</p>
+            <p className="text-gray-600 mt-2 w-full break-words break-all hyphens-auto">{trainer.about}</p>
             <div className="mt-3">
               <p className="text-lg md:text-xl font-semibold">Work History</p>
-              <p className="text-gray-600 whitespace-pre-line mt-2">
+              <p className="text-gray-600 whitespace-pre-line mt-2 break-words break-all hyphens-auto">
                 {trainer.workHistory}
               </p>
             </div>
             <div className="mt-3">
               <p className="text-lg md:text-xl font-semibold">Education</p>
-              <p className="text-gray-600 mt-2">{trainer.educationDetail}</p>
+              <p className="text-gray-600 mt-2 break-words break-all hyphens-auto">{trainer.educationDetail}</p>
             </div>
           </div>
         </div>

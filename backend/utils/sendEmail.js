@@ -9,7 +9,6 @@ const mg = mailgun({
 });
 
 const sendEmail = async (to, subject, text) => {
-  console.log("Entered send mail fxn");
   
   const data = {
     from: "traininghorizonco@gmail.com",

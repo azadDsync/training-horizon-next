@@ -44,7 +44,9 @@ const UploadImage: React.FC<Prop> = ({ imageUrl, setImageUrl }) => {
   };
 
   return (
-    <div className="flex flex-col items-center p-3 rounded-md border border-gray-300 shadow-sm bg-white w-full">
+    <div className="flex flex-col items-start p-3 rounded-md border border-gray-300 shadow-sm bg-white w-full">
+      <p className='text-lg font-bold'>Upload Image</p>
+      <br />
       <input
         type="file"
         accept="image/*"

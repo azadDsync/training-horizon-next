@@ -24,6 +24,7 @@ interface TrainerData {
   phone: string;
   avgRating: number;
   [key: string]: any;
+  imageUrl: string;
 }
 
 interface ListingDetailPageProps {
@@ -38,6 +39,7 @@ interface ListingCard {
   mode: string;
   imageUrl: string;
   location: string;
+  preRequistes: string;
   quantity: string;
   classSize: string;
   startDate: string;
@@ -94,6 +96,15 @@ const ListingDetail: React.FC<ListingDetailPageProps> = ({ id }) => {
       fetchTrainerData();
     }
   }, [form.trainerId]);
+  const extractAge = (value, isMaxAge = false) => {
+    if (typeof value !== "string") return 0; // Ensure value is a string before processing
+
+    if (value.includes("18+Adults")) return isMaxAge ? 55 : 18;
+    if (value.includes("55+Senior")) return isMaxAge ? 100 : 55;
+
+    const match = value.match(/\d+/); // Extracts the first number found in the string
+    return match ? Number(match[0]) : 0; // Defaults to 0 if no valid number found
+  };
 
   return (
     <div className="space-y-8 p-4 md:p-6 lg:p-8 bg-gray-50">
@@ -102,17 +113,19 @@ const ListingDetail: React.FC<ListingDetailPageProps> = ({ id }) => {
         {/* Main Content */}
         <div className="w-full md:w-2/3">
           {/* <MainDetailPage listingId={id} listingData={getListing} /> */}
-          {data && <NewDetailPage listingId={id} listingData = {getListing} instructorData = {data} />}
+          {data && <NewDetailPage listingId={id} listingData={getListing} instructorData={data} />}
         </div>
 
         {/* Sidebar */}
         <div className="w-full md:w-1/3">
-        
+
           <SideLayout
-            minAgeLimit={Number(form.minAge)}
-            maxAgeLimit={Number(form.maxAge)}
+            minAgeLimit={extractAge(form.minAge)}
+            maxAgeLimit={extractAge(form.maxAge, true)}
             listingId={id}
             trainerPhone={data?.phone ?? ""}
+            listingPrice={getListing.price}
+            priceMode={getListing.priceMode}
           />
         </div>
       </div>

@@ -8,6 +8,7 @@ interface trainerData {
   email: string;
   qualifcations: string;
   experience: string;
+  imageUrl: string;
 }
 const teacher = () => {
   return (

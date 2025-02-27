@@ -7,6 +7,16 @@ import { useRouter } from "next/navigation";
 import Listing from "../show_all_listings/Listing";
 import CustomCalendar from "./Calendar";
 import Calendar from "./Calendar";
+import {
+  FaCalendarAlt,
+  FaCalendarDay,
+  FaChild,
+  FaClock,
+  FaDollarSign,
+  FaGlobe,
+  FaMapMarkerAlt,
+} from "react-icons/fa";
+import { FaChildren, FaLocationPin } from "react-icons/fa6";
 
 interface Listing {
   category: string;
@@ -20,6 +30,7 @@ interface Listing {
   classSize: string;
   startDate: string;
   endDate: string;
+  preRequistes: string;
   days: [string];
   gender: string;
   startTime: string;
@@ -44,6 +55,7 @@ interface TrainerData {
   experience: string;
   qualifications: string;
   avgRating: number;
+  imageUrl: string;
 }
 
 interface InstructorsPageProps {
@@ -59,8 +71,9 @@ const NewDetailPage: React.FC<ListingId> = ({
   const [favorites, setFavorites] = useState<string[]>([]);
   const form = useSelector((state: RootState) => state.form);
   const [isSelected, setIsSelected] = useState<boolean>(form.isFavorite);
+  const [getTrainerImageUrl, setTrainerImageUrl] = useState("/img/loading.gif");
 
-  const [getImageUrl, setImageUrl] = useState<string>("/img/animation2.gif");
+  const [getImageUrl, setImageUrl] = useState<string>("/img/loading.gif");
 
   useEffect(() => {
     const fetchFavorites = async () => {
@@ -92,7 +105,7 @@ const NewDetailPage: React.FC<ListingId> = ({
       }
     };
 
-    const fetchImage = async () => {
+    const fetchListingImage = async () => {
       try {
         const response2 = await fetch(
           `${process.env.NEXT_PUBLIC_BASE_URL}/upload?imageUrl=${listingData.imageUrl}`
@@ -102,14 +115,29 @@ const NewDetailPage: React.FC<ListingId> = ({
         const data = await response2.json();
         setImageUrl(data.signedUrl);
         console.log(getImageUrl);
-      } catch (error) {}
+      } catch (error) { }
+    };
+
+    const fetchTrainerImage = async () => {
+      try {
+        console.log(instructorData)
+        const response2 = await fetch(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/upload?imageUrl=${instructorData.imageUrl}`
+        );
+        if (!response2.ok) throw new Error("Failed to fetch signed URL");
+
+        const data = await response2.json();
+        setTrainerImageUrl(data.signedUrl);
+      } catch (error) { }
     };
 
     console.log("Image url : ", getImageUrl);
 
     fetchFavorites();
-    fetchImage();
-  }, [listingData.listingId, listingData.imageUrl]);
+    fetchListingImage();
+    fetchTrainerImage();
+
+  }, [listingData.listingId, listingData.imageUrl, instructorData.imageUrl]);
   function formatDays(days: string[]) {
     return days?.map((day) => day.replace(/([A-Z][a-z]+)/g, " $1")).join(", ");
   }
@@ -183,37 +211,55 @@ const NewDetailPage: React.FC<ListingId> = ({
 
         <div className="md:col-span-2 space-y-4">
           <h1 className="mt-10 text-3xl font-bold">{listingData.title}</h1>
-          <div className="flex justify-between">
-            <p className="text-gray-500 flex items-center font-bold">
-              From : {listingData.startDate} &bull; To : {listingData.endDate}
-            </p>
-            <p className="text-gray-500 flex items-center font-bold">
-              Price : ${listingData.price} / {listingData.priceMode}
-            </p>
-            <p className="text-gray-500 flex items-center font-bold">
-              Age Group : {listingData.minAge} - {listingData.maxAge}
-            </p>
-          </div>
-          <div className="flex justify-between">
+          <div className="bg-white shadow-md rounded-lg p-4 w-full text-gray-700 font-medium">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex items-center font-bold">
+                <FaCalendarAlt className="mr-2" />
+                <span>
+                  {listingData.startDate} - {listingData.endDate}
+                </span>
+              </div>
+              <div className="flex items-center font-bold">
+                <FaClock className="mr-2" />
+                <span>
+                  {listingData.startTime} - {listingData.endTime}
+                </span>
+              </div>
+              <div className="flex items-center font-bold">
+                <FaCalendarDay className="mr-2" />
+                <span>{formatDays(listingData.days)}</span>
+              </div>
 
-          <p className="text-gray-500 flex items-center font-bold">
-              Class Type : {listingData.classSize}
-            </p>
-          <p className="text-gray-500 flex items-center font-bold">
-            Days: {formatDays(listingData.days)}
-          </p>
-          </div>
-          <div className="flex justify-between">
-            <div className="text-gray-500 flex items-center gap-2 font-bold">
-              Mode : {listingData.mode}
+              <div className="flex items-center font-bold">
+                <span>Class Type: {listingData.classSize}</span>
+              </div>
+              <div className="flex items-center font-bold">
+                <FaChild className="mr-2" />
+                <span>
+                  Age: {listingData.minAge} - {listingData.maxAge}
+                </span>
+              </div>
+              <div className="flex items-center font-bold">
+                <FaChildren className="mr-2" />
+                <span>{listingData.gender}</span>
+              </div>
+
+              <div className="flex items-center font-bold">
+                <FaLocationPin className="mr-2" />
+                <span>Mode: {listingData.mode}</span>
+              </div>
+              <div className="flex items-center font-bold">
+                <span>Age Group : {listingData.minAge} - {listingData.maxAge}</span>
+              </div>
+              <div className="flex items-center font-bold">
+                <FaGlobe className="mr-2" />
+                <span>{listingData.location}</span>
+              </div>
             </div>
-            <div className="text-gray-500 flex items-center gap-2 font-bold">
-              {listingData.mode === "Offline" ? `Location` : `Link`}:{" "}
-              {listingData.location}
-            </div>
           </div>
+
           <div>
-            <p className="text-xl flex items-center font-bold">
+            <p className="text-xl my-5 flex items-center font-bold">
               About This Course
             </p>
             <p className="text-gray-700">{listingData.description}</p>
@@ -230,15 +276,17 @@ const NewDetailPage: React.FC<ListingId> = ({
 
       {/* Instructor */}
       <div className="border p-4 rounded-lg shadow-md flex flex-col">
-        <h2 className="mb-10 text-3xl font-bold">About Instructor</h2>
+        <h2 className="mb-3 text-3xl font-bold">About Instructor</h2>
         <div className="p-4 rounded-lg flex items-center gap-10">
-          <Image
-            src="/img/bp1.svg"
-            alt="Instructor"
-            width={80}
-            height={80}
-            className="rounded-full"
-          />
+          <div className="">
+            <Image
+              src={getTrainerImageUrl}
+              alt="Instructor"
+              width={200}
+              height={200}
+              className="rounded-lg object-fill"
+            />
+          </div>
           <div>
             <div>
               <h3 className="text-lg font-semibold">
@@ -260,7 +308,7 @@ const NewDetailPage: React.FC<ListingId> = ({
           </div>
           <button
             onClick={() => handleViewProfile(instructorData._id)}
-            className="ml-auto px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+            className="ml-auto px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-600"
           >
             View Profile
           </button>

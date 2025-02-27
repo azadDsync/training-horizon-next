@@ -17,6 +17,7 @@ import {
 } from "@/components/trainer-dashboard/ui/form";
 import { Input } from "@/components/trainer-dashboard/ui/input";
 import Link from "next/link";
+import UploadImage from "@/components/UserFlow/UploadImage";
 
 // Schema definition with custom password confirmation validation
 const formSchema = z
@@ -49,6 +50,7 @@ const formSchema = z
   });
 
 export function OrganizationForm() {
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [popupVisible, setPopupVisible] = useState(false);
   const [popupMessage, setPopupMessage] = useState("");
 
@@ -92,32 +94,31 @@ export function OrganizationForm() {
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-1">
-          <div className="grid grid-cols-2 w-full gap-2 max-[769px]:grid-cols-1">
-            <div>
-              <div className="flex gap-2 w-full max-sm:flex-col">
-                <div className="flex w-full max-sm:w-full">
-                  <FormField
-                    name="orgname"
-                    control={form.control}
-                    render={({ field }) => (
-                      <FormItem className="w-full">
-                        <FormLabel>Name of the Organization</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Enter name of the organization" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              </div>
+          <div className="grid grid-cols-1 w-full gap-2 max-[769px]:grid-cols-1">
 
+            <div>
+              <FormField
+                name="orgname"
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem className="w-full">
+                    <FormLabel className="text-lg">Name of the Organization</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter name of the organization" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div>
               <FormField
                 name="email"
                 control={form.control}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email Address</FormLabel>
+                    <FormLabel className="text-lg">Email Address</FormLabel>
                     <FormControl>
                       <Input placeholder="Enter your email address" {...field} />
                     </FormControl>
@@ -125,13 +126,19 @@ export function OrganizationForm() {
                   </FormItem>
                 )}
               />
+            </div>
 
+            <div className="w-full">
+              <UploadImage imageUrl={imageUrl} setImageUrl={setImageUrl} />
+            </div>
+
+            <div>
               <FormField
                 name="password"
                 control={form.control}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Password</FormLabel>
+                    <FormLabel className="text-lg">Password</FormLabel>
                     <FormControl>
                       <Input
                         type="password"
@@ -143,13 +150,15 @@ export function OrganizationForm() {
                   </FormItem>
                 )}
               />
+            </div>
 
+            <div>
               <FormField
                 name="confirmPassword"
                 control={form.control}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Confirm Password</FormLabel>
+                    <FormLabel className="text-lg">Confirm Password</FormLabel>
                     <FormControl>
                       <Input
                         type="password"
@@ -161,13 +170,15 @@ export function OrganizationForm() {
                   </FormItem>
                 )}
               />
+            </div>
 
+            <div>
               <FormField
                 name="phone"
                 control={form.control}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Mobile Number</FormLabel>
+                    <FormLabel className="text-lg">Mobile Number</FormLabel>
                     <FormControl>
                       <Input type="tel" placeholder="Enter your mobile number" {...field} />
                     </FormControl>
@@ -175,13 +186,15 @@ export function OrganizationForm() {
                   </FormItem>
                 )}
               />
+            </div>
 
+            <div>
               <FormField
                 name="linkedin"
                 control={form.control}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>LinkedIn Profile</FormLabel>
+                    <FormLabel className="text-lg">LinkedIn Profile</FormLabel>
                     <FormControl>
                       <Input placeholder="Enter your LinkedIn profile link" {...field} />
                     </FormControl>
@@ -192,14 +205,12 @@ export function OrganizationForm() {
             </div>
 
             <div>
-              <div className="flex justify-center"></div>
-
               <FormField
                 name="address"
                 control={form.control}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Address</FormLabel>
+                    <FormLabel className="text-lg">Address</FormLabel>
                     <FormControl>
                       <Input placeholder="Enter your address" {...field} />
                     </FormControl>
@@ -212,9 +223,9 @@ export function OrganizationForm() {
 
           <div className="flex justify-between py-4">
             <Link href="/">
-            <Button variant={"outline"} type="button">
-              Cancel
-            </Button>
+              <Button variant={"outline"} type="button">
+                Cancel
+              </Button>
             </Link>
             <Button type="submit">Submit Details</Button>
           </div>

@@ -185,7 +185,7 @@ function PendingDetails() {
           </div>
         </div>
 
-        <div className="bg-white  rounded-lg shadow p-4">
+        {/* <div className="bg-white  rounded-lg shadow p-4">
           <h3 className="text-lg font-semibold mb-4">Customer Reaction</h3>
           <div className="mb-4">
             <div className="flex items-center space-x-2">
@@ -222,7 +222,7 @@ function PendingDetails() {
           <button className="w-full bg-[#17A8FC] text-white py-2 rounded-lg hover:bg-blue-600">
             Manage Reactions
           </button>
-        </div>
+        </div> */}
         <div className="col-span-2 bg-white rounded-lg shadow p-4">
           <h3 className="text-lg font-semibold mb-4">Pending Listings</h3>
           <div className="overflow-y-auto h-64">

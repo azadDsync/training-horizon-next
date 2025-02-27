@@ -5,7 +5,11 @@ const trainerSchema = new mongoose.Schema({
   _id: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   fname: { type: String, required: true },
   lname: { type: String, required: true },
-  avgRating :{ type: Number, default: 0},
+  imageUrl: {
+    type: String,
+    required: true,
+  },
+  avgRating: { type: Number, default: 0 },
   qualifications: { type: String, required: true },
   linkedin: { type: String, required: true },
   experience: { type: String, required: true },

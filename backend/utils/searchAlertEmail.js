@@ -8,7 +8,6 @@ const mg = mailgun({
 });
 
 const searchAlertEmail = async (to, subject, text) => {
-  console.log("Entered send mail fxn");
   
   const data = {
     from: "traininghorizonco@gmail.com",

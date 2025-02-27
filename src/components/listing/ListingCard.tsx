@@ -93,7 +93,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
     );
   };
   const [getImageUrl, setImageUrl] = useState<string>(
-    "/img/tempListingImg.jpg"
+    "/img/loading.gif"
   );
 
   useEffect(() => {

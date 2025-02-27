@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "../ui/button";
 import HomeNavbar from "./HomeNavbar"// Create a separate Navbar for Home
-import router from "next/router";
+import Image from "next/image";
 
 const Navbar = () => {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -56,11 +56,15 @@ const Navbar = () => {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          <div className="text-2xl px-5 font-extrabold bg-gradient-to-r from-blue-600 to-purple-600 text-transparent bg-clip-text">
-            <Link href="/">Training Horizon</Link>
+          <div className="text-2xl px-5 font-mono font-bold bg-gradient-to-r from-blue-600 to-purple-600 text-transparent bg-clip-text">
+            {/* <Link href="/">Make Me Pro</Link>/ */}
+            <Link href="/"><Image className="mt-6" src="/Logo/MMP.png" alt="MMP Logo" width={120} height={50} /></Link>
           </div>
 
           <div className="flex space-x-6">
+          {/* <Link href="/" className="hidden md:flex text-gray-700 hover:underline">
+              Home
+            </Link> */}
             <Link href="/all/courses" className="hidden md:flex text-gray-700 hover:underline">
               Courses
             </Link>
@@ -98,7 +102,7 @@ const Navbar = () => {
               <Link href="/dashboard/teacher/join_as_teacher" className="hidden sm:block hover:underline">
                 Join As Trainer
               </Link>
-              <Button onClick={() => router.push("/userflow/login")} variant="default" className="bg-blue-500 hover:bg-blue-600">
+              <Button onClick={() => router.push("/userflow/login")} variant="default" className="bg-blue-600 hover:bg-blue-600">
                 Sign in
               </Button>
             </div>

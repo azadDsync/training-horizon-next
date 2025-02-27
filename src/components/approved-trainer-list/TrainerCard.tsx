@@ -1,7 +1,8 @@
 "use client";
-import Image from "next/image";
-import Link from "next/link";
-import { Card, CardContent } from "../ui/card";
+import Image from 'next/image';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { Card, CardContent } from "@/components/ui/card";
 
 interface TrainerProps {
   trainer: {
@@ -10,65 +11,63 @@ interface TrainerProps {
     email: string;
     phone: string;
     _id: string;
+    imageUrl: string;
   };
 }
 
 const TrainerCard: React.FC<TrainerProps> = ({ trainer }) => {
-  console.log(trainer._id);
+  const [getImageUrl, setImageUrl] = useState<string>("/img/loading.gif");
+
+  useEffect(() => {
+    const loadImage = async () => {
+      try {
+        if (!trainer.imageUrl) return;
+
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/upload?imageUrl=${trainer.imageUrl}`
+        );
+        if (!response.ok) throw new Error("Failed to fetch signed URL");
+
+        const data = await response.json();
+        console.log("Signed URL Response:", data);
+
+        if (data.signedUrl) {
+          setImageUrl(data.signedUrl);
+        }
+      } catch (error) {
+        console.error("Error loading image:", error);
+      }
+    };
+
+    loadImage();
+  }, [trainer.imageUrl]);
+
   return (
-    // <div className="w-80  h-96 flex flex-col overflow-hidden rounded-sm shadow-3xl hover:scale-105 hover:ring-sky-500 ring-1 ring-zinc-200">
-    //   <div className="h-5/6 w-full flex items-center justify-center flex-col">
-    //     <div className="w-36 h-36 rounded-full bg-sky-400 mb-6">
-    //       <Image src="/img/instructor.png"
-    //         className="object-fill"
-    //         alt=''
-    //         width={200}
-    //         height={200}
-    //       />
-    //     </div>
+    <Card className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-2xl transition-transform duration-300 transform hover:scale-105 hover:-translate-y-2">
+      <img
+        src={getImageUrl}
+        alt={`${trainer.fname} ${trainer.lname}`}
+        className="w-full h-[300px] object-cover rounded-t-lg"
+      />
 
-    //     <div className="text-xl font-bold">{trainer.fname} {trainer.lname}</div>
-    //     <div className="text-sm text-gray-600">{trainer.email}</div>
-    //     <div className="text-sm text-gray-600">{trainer.phone}</div>
-    //   </div>
+      <CardContent className="pt-6 space-y-2">
+        <div className="flex items-center justify-center font-semibold">
+          <h3 className="text-xl">{trainer.fname} {trainer.lname}</h3>
+        </div>
 
-    //   <div className="w-full ring-1 ring-zinc-200 h-1/6 flex items-center justify-center">
-    //     <Link href={`/dashboard/teacher/${trainer._id}`} className="text-sky-500">Know More</Link>
-    //   </div>
-    // </div>
-
-    // <div className="flex flex-col items-center  bg-background">
-    //   <div className="w-full max-w-[1296px] px-4 space-y-6">
-    //     <div className="flex space-x-6 ">
-    //       <Card
-    //         className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-2xl transition-transform duration-300 transform hover:scale-105 hover:-translate-y-2"
-    //         // onClick={() => {
-    //         //   router.push(`/${categoryName}/${subCategory}`);
-    //         // }}
-    //       >
-    //         <div className="w-full aspect-square relative">
-    //         <img
-    //           src={"/img/instructor.png"}
-    //           alt={"abc"}
-    //           className=" object-cover rounded-t-lg"
-    //           width={200}
-    //         height={200}
-    //         />
-    //         </div>
-            
-    //         <CardContent className="p-6 space-y-6">
-    //           <div className="space-y-3">
-    //             <h3 className="text-xl font-semibold">
-    //               {trainer.fname} {trainer.lname}
-    //             </h3>
-    //           </div>
-    //         </CardContent>
-    //       </Card>
-    //     </div>
-    //   </div>
-    // </div>
-    <></>
+        <div className="flex flex-col items-center justify-center">
+          <div className="text-sm text-gray-600">{trainer.email}</div>
+          <div className="text-sm text-gray-600">{trainer.phone}</div>
+          <Link
+            href={`/dashboard/teacher/${trainer._id}`}
+            className="text-sky-500 hover:underline"
+          >
+            Know More
+          </Link>
+        </div>
+      </CardContent>
+    </Card>
   );
-};
+}
 
 export default TrainerCard;

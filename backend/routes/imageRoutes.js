@@ -61,7 +61,7 @@ imageRouter.get("/upload", async (req, res) => {
   }
 
   try {
-    const image = await Listing.findOne({ imageUrl }); // Find by imageUrl
+    const image = await Image.findOne({ imageUrl }); // Find by imageUrl
 
     if (!image) {
       return res.status(404).send("Image not found");

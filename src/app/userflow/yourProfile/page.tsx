@@ -9,6 +9,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 // import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import MyOrders from "../orders/page";
 
 interface UserData {
   _id: string;
@@ -196,7 +197,7 @@ const Sidebar = ({
 const ContentArea = ({ selectedTab, user }: { selectedTab: string; user: UserData | null }) => (
   <div className="w-3/4 p-8">
     {selectedTab === "Profile" && <EditProfileContent />}
-    {selectedTab === "Purchases and Subscriptions" && <SubscriptionsContent />}
+    {selectedTab === "Purchases and Subscriptions" && <MyOrders />}
     {selectedTab === "Family Members" && <FamilyMembersContent />}
     {selectedTab === "My Listings"&& <MyListingContent />}
 

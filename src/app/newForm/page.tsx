@@ -16,6 +16,7 @@ interface Trainer {
   about: string;
   workHistory: string;
   educationDetail: string;
+  imageUrl: string;
 }
 
 const TrainerList: React.FC = () => {

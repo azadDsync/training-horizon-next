@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 // import Card from "@/components/trainer-dashboard/Card";
 import Image from "next/image";
-import kirillmenko from "@/data/teachers/kirill";
 import { useParams } from "next/navigation";
 
 interface TrainerData {
@@ -73,13 +72,13 @@ any) => {
           <Image
             alt="Teacher"
             className="rounded-full h-[180px] w-[180px] md:h-[230px] md:w-[230px] mx-auto mb-5 object-cover"
-            src={kirillmenko.imageUrl}
+            src={imageUrl}
             width={230}
             height={230}
           />
 
           <h1 className="font-bold text-[24px] md:text-[32px] text-center text-[#292929]">
-            {trainer.fname} +" " + {trainer.lname}
+            {trainer.fname} {trainer.lname}
           </h1>
           <h3 className="text-center text-gray-400">Professional</h3>
           <div className="flex justify-center">
@@ -229,16 +228,16 @@ any) => {
             <p className="text-lg md:text-xl font-semibold">
               About {trainer.fname}
             </p>
-            <p className="text-gray-600 mt-2 w-full">{kirillmenko.about}</p>
+            <p className="text-gray-600 mt-2 w-full">{about}</p>
             <div className="mt-3">
               <p className="text-lg md:text-xl font-semibold">Work History</p>
               <p className="text-gray-600 whitespace-pre-line mt-2">
-                {kirillmenko.workHistory}
+                {workHistory}
               </p>
             </div>
             <div className="mt-3">
               <p className="text-lg md:text-xl font-semibold">Education</p>
-              <p className="text-gray-600 mt-2">{kirillmenko.education}</p>
+              <p className="text-gray-600 mt-2">{education}</p>
             </div>
             {/* <div className="flex flex-wrap justify-around mt-5">
             {cardData.map((card, index) => (

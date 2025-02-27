@@ -2,6 +2,7 @@ const Trainer = require("../models/Trainer");
 // const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { z } = require("zod");
+const sendEmail = require("../utils/sendEmail");
 
 const signUpSchema = z.object({
   _id: z.string(),
@@ -17,7 +18,8 @@ const signUpSchema = z.object({
   password: z.string().min(6, "Password must be at least 6 characters long"),
   about: z.string().min(1),
   workHistory: z.string().min(1),
-  educationDetail: z.string().min(1)
+  educationDetail: z.string().min(1),
+  imageUrl: z.string().min(1)
 });
 
 const loginSchema = z.object({
@@ -45,10 +47,10 @@ exports.signUpTrainer = async (req, res) => {
     await trainer.save();
 
     // Generate JWT
-    const token = jwt.sign({ 
-                id: trainer._id, 
-                role: "trainer"
-              }, process.env.JWT_SECRET, {
+    const token = jwt.sign({
+      id: trainer._id,
+      role: "trainer"
+    }, process.env.JWT_SECRET, {
       expiresIn: "1h",
     });
 
@@ -65,9 +67,11 @@ exports.loginTrainer = async (req, res) => {
 
     // Find trainer by email
     const trainer = await Trainer.findOne({ email: validatedData.email });
+    console.log("Trainer logged in:", trainer);
     if (!trainer) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
+
 
     // Check password
     // const isMatch = await bcrypt.compare(validatedData.password, trainer.password);
@@ -81,6 +85,14 @@ exports.loginTrainer = async (req, res) => {
     });
 
     res.status(200).json({ token });
+
+
+    await sendEmail(
+      trainer.email,
+      "Account Registration",
+      `Hello ${trainer.FirstName}, \n\nYou have successfully Logged in.`,
+      `<p>Hello ${trainer.FirstName},</p><p>You have successfully registered </p>`
+    );
   } catch (e) {
     res.status(500).json({ error: e.message });
   }

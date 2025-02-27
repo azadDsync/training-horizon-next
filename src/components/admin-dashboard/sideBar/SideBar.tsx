@@ -24,7 +24,7 @@ const Sidebar: React.FC<ChildComponentProps> = ({ value, setValue }) => {
     <aside className="bg-blue-50 p-4 w-64">
       <div className="mb-12 flex justify-center">
         <Image
-          src="/img/dashboard/logo.svg"
+          src="/Logo/MMP.png"
           alt="Logo"
           width={150}
           height={50}
@@ -117,7 +117,7 @@ const Sidebar: React.FC<ChildComponentProps> = ({ value, setValue }) => {
       <nav>
         <ul>
           <li className="mb-2 mt-2 w-48">
-            <button
+            {/* <button
               onClick={() => handleClick("Account Setting")}
               className={`flex flex-row rounded-lg w-full p-2 ${
                 activeButton === "Account Setting"
@@ -132,10 +132,10 @@ const Sidebar: React.FC<ChildComponentProps> = ({ value, setValue }) => {
                 height={50}
               />
               Account Setting
-            </button>
+            </button> */}
           </li>
           <li className="mb-2 mt-2 w-48">
-            <button
+            {/* <button
               onClick={() => {
                 handleClick("Order Status");
                 setValue("orderStatus");
@@ -153,7 +153,7 @@ const Sidebar: React.FC<ChildComponentProps> = ({ value, setValue }) => {
                 height={50}
               />
               Order Status
-            </button>
+            </button> */}
           </li>
           {/* <li className="mb-2">
             <button
@@ -172,7 +172,7 @@ const Sidebar: React.FC<ChildComponentProps> = ({ value, setValue }) => {
             </button>
           </li> */}
           <li className="mb-2">
-            <button
+            {/* <button
               onClick={() => handleClick("Log Out")}
               className={`flex flex-row rounded-lg w-full p-2 ${
                 activeButton === "Log Out"
@@ -187,7 +187,7 @@ const Sidebar: React.FC<ChildComponentProps> = ({ value, setValue }) => {
                 height={50}
               />
               Log Out
-            </button>
+            </button> */}
           </li>
         </ul>
       </nav>

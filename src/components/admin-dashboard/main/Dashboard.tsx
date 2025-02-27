@@ -21,18 +21,17 @@ const Dashboard: React.FC<ChildComponentProps> = ({ value, setValue }) => {
             alt="admin"
           />
           <div>
-            <h2 className="text-xl font-semibold">James Thompson</h2>
-            <p className="text-sm text-gray-500">Founder @ Training Horizons</p>
+            <h2 className="text-xl font-semibold">Simrat Bhalla</h2>
+            <p className="text-sm text-gray-500">Founder @ MakeMePro Co.</p>
           </div>
         </div>
         <div className="flex items-center space-x-4">
-          <input
+          {/* <input
             type="text"
             placeholder="Search"
             className="px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#17A8FC]"
-          />
+          /> */}
           <div className="text-gray-500 flex flex-row space-x-2">
-            <span className="mr-2">16 June, 2023</span>
             <Image
               src="/img/dashboard/notification.svg"
               alt="notificaiton"

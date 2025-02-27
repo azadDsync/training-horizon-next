@@ -1,9 +1,9 @@
 const express = require("express");
-const jwt=require("jsonwebtoken");
+const jwt = require("jsonwebtoken");
 const zod = require("zod");
-const JWT_SECRET=require("../config/jwt");
+const JWT_SECRET = require("../config/jwt");
 const Listing = require("../models/Listing");
-const {trainerAuthMiddleware } = require("../middleware/authMiddleware");
+const { trainerAuthMiddleware } = require("../middleware/authMiddleware");
 // const { default: mongoose } = require("mongoose");
 
 const listingRouter = express.Router();
@@ -51,9 +51,7 @@ const postListingSchema = zod.object({
   description: zod.string(),
 });
 listingRouter.get("/listing", async function (req, res) {
-
-  const listings = await Listing.find();
-
+  const listings = await Listing.find({ isApproved: true });
   res.status(200).json(listings);
 });
 
@@ -65,13 +63,13 @@ listingRouter.get("/bulk", async function (req, res) {
       {
         category: {
           $regex: filter,
-          $options: "i", 
+          $options: "i",
         },
       },
       {
         title: {
           $regex: filter,
-          $options: "i", 
+          $options: "i",
         },
       },
     ],
@@ -80,8 +78,8 @@ listingRouter.get("/bulk", async function (req, res) {
   res.status(200).json(listings);
 });
 
-listingRouter.get("/", async (req, res) => {
-  const { 
+listingRouter.get("/listing", async (req, res) => {
+  const {
     category,
     priceMode,
     title,
@@ -128,25 +126,24 @@ listingRouter.get("/", async (req, res) => {
   if (gender) {
     query.gender = gender;
   }
-  
-    query.minAge = {};
-    query.maxAge = {};
-    if (minAge) query.minAge.$gte = parseInt(minAge);
-    if (maxAge) query.maxAge.$lte = parseInt(maxAge);
+
+  query.minAge = {};
+  query.maxAge = {};
+  if (minAge) query.minAge.$gte = parseInt(minAge);
+  if (maxAge) query.maxAge.$lte = parseInt(maxAge);
 
   if (startTime) {
     query.startTime = {};
     if (startTime) query.startTime.$gte = startTime;
-  
   }
-  if(endTime){
+  if (endTime) {
     query.endTime = {};
     query.endTime.$lte = endTime;
   }
 
-
   try {
-    const result = await Listing.find(query);
+    const result = await Listing.find({ ...query, isApproved: true });
+
     res.json(result);
   } catch (error) {
     console.error("Error fetching listing:", error);
@@ -154,12 +151,11 @@ listingRouter.get("/", async (req, res) => {
   }
 });
 
-
 listingRouter.get("/listing/id/:trainerId", async function (req, res) {
   const trainerId = req.params;
   try {
     // Fetch the listing from the database using the listingId
-    const listings = await Listing.findById(trainerId).populate('trainer');
+    const listings = await Listing.findById(trainerId).populate("trainer");
 
     // Check if the listing exists
     if (!listings) {
@@ -181,7 +177,6 @@ listingRouter.get("/listing/id/:trainerId", async function (req, res) {
     });
   }
 });
-
 
 listingRouter.get("/listing/:listingId", async function (req, res) {
   // Extract the listingId from the route parameter
@@ -212,50 +207,59 @@ listingRouter.get("/listing/:listingId", async function (req, res) {
   }
 });
 
-listingRouter.get("/getListingsByTrainerId/:trainerId", async function (req, res){
-  const {trainerId} = req.params;
-  try{
-    const listings = await Listing.find({trainerId: trainerId});
-    if(!listings){
-      return res.status(404).json({
-        message: "Trainer not found",
-      })
+listingRouter.get(
+  "/getListingsByTrainerId/:trainerId",
+  async function (req, res) {
+    const { trainerId } = req.params;
+    try {
+      const listings = await Listing.find({ trainerId: trainerId });
+      if (!listings) {
+        return res.status(404).json({
+          message: "Trainer not found",
+        });
+      }
+
+      res.status(200).json({
+        message: "Listings retrieved successfully",
+        listings,
+      });
+    } catch (error) {
+      res.status(500).json({
+        message: "Error fetching listings",
+        error: error,
+      });
     }
-    
-    res.status(200).json({
-      message: "Listings retrieved successfully",
-      listings,
-    })
-  } catch(error){
-    res.status(500).json({
-      message: "Error fetching listings",
-      error: error,
-    })
   }
-})
+);
 
-listingRouter.delete("/deleteListingById/:listingId", trainerAuthMiddleware, async function (req, res) {
-  const {listingId} = req.params
-  try{
-    const listing = await Listing.findByIdAndDelete(listingId);
-    if(!listing)
-      return res.status(404).json({error: "No listing with this id found"})
+listingRouter.delete(
+  "/deleteListingById/:listingId",
+  trainerAuthMiddleware,
+  async function (req, res) {
+    const { listingId } = req.params;
+    try {
+      const listing = await Listing.findByIdAndDelete(listingId);
+      if (!listing)
+        return res.status(404).json({ error: "No listing with this id found" });
 
-    res.status(200).json({message: "Listing Deleted successfully"})
-  } catch(error){
-    res.status(404).json({error: error.message})
+      res.status(200).json({ message: "Listing Deleted successfully" });
+    } catch (error) {
+      res.status(404).json({ error: error.message });
+    }
   }
+);
 
-})
-
-listingRouter.post("/add-listing", trainerAuthMiddleware, async function (req, res) {
+listingRouter.post(
+  "/add-listing",
+  trainerAuthMiddleware,
+  async function (req, res) {
     const inputFromTrainer = {
       trainerId: req.trainerId,
       category: req.body.category,
       subCategory: req.body.subCategory,
       priceMode: req.body.priceMode,
       title: req.body.title,
-      imageUrl:req.body.imageUrl,
+      imageUrl: req.body.imageUrl,
       price: req.body.price,
       mode: req.body.mode,
       location: req.body.location,
@@ -301,7 +305,7 @@ listingRouter.post("/add-listing", trainerAuthMiddleware, async function (req, r
       res.status(200).json({
         message: "list created successfully",
         token: token,
-        listingId: listing._id
+        listingId: listing._id,
       });
     } catch (error) {
       res.status(411).json({
@@ -312,61 +316,66 @@ listingRouter.post("/add-listing", trainerAuthMiddleware, async function (req, r
   }
 );
 
-listingRouter.put("/add-listing/:id", trainerAuthMiddleware,async function (req, res) {
-  const inputFromTrainer = {
-    trainerId: req.trainerId,
-    category: req.body.category,
-    subCategory: req.body.subCategory,
-    priceMode: req.body.priceMode,
-    title: req.body.title,
-    imageUrl:req.body.imageUrl,
-    price: req.body.price,
-    mode: req.body.mode,
-    location: req.body.location,
-    quantity: req.body.quantity,
-    classSize: req.body.quantity,
-    startDate: req.body.startDate,
-    endDate: req.body.endDate,
-    days: req.body.days,
-    gender: req.body.gender,
-    startTime: req.body.startTime,
-    endTime: req.body.endTime,
-    minAge: req.body.minAge,
-    maxAge: req.body.maxAge,
-    preRequistes: req.body.preRequistes,
-    description: req.body.description,
-    isApproved: false,
-  };
-  const result = getListingSchema.safeParse(inputFromTrainer);
+listingRouter.put(
+  "/add-listing/:id",
+  trainerAuthMiddleware,
+  async function (req, res) {
+    const inputFromTrainer = {
+      trainerId: req.trainerId,
+      category: req.body.category,
+      subCategory: req.body.subCategory,
+      priceMode: req.body.priceMode,
+      title: req.body.title,
+      imageUrl: req.body.imageUrl,
+      price: req.body.price,
+      mode: req.body.mode,
+      location: req.body.location,
+      quantity: req.body.quantity,
+      classSize: req.body.quantity,
+      startDate: req.body.startDate,
+      endDate: req.body.endDate,
+      days: req.body.days,
+      gender: req.body.gender,
+      startTime: req.body.startTime,
+      endTime: req.body.endTime,
+      minAge: req.body.minAge,
+      maxAge: req.body.maxAge,
+      preRequistes: req.body.preRequistes,
+      description: req.body.description,
+      isApproved: false,
+    };
+    const result = getListingSchema.safeParse(inputFromTrainer);
 
-  if (!result.success) {
-    return res.status(411).json({
-      message: "Incorrect inputs",
-      result,
-    });
-  }
-  try {
-    
-    const listing = await Listing.findByIdAndUpdate(req.params.id,inputFromTrainer);
-    const token = jwt.sign(
-      {
+    if (!result.success) {
+      return res.status(411).json({
+        message: "Incorrect inputs",
+        result,
+      });
+    }
+    try {
+      const listing = await Listing.findByIdAndUpdate(
+        req.params.id,
+        inputFromTrainer
+      );
+      const token = jwt.sign(
+        {
+          listingId: listing._id,
+        },
+        JWT_SECRET
+      );
+
+      res.status(200).json({
+        message: "list created successfully",
+        token: token,
         listingId: listing._id,
-      },
-      JWT_SECRET
-    );
-
-    res.status(200).json({
-      message: "list created successfully",
-      token: token,
-      listingId: listing._id
-    });
-  } catch (error) {
-    res.status(411).json({
-      message: " Incorrect listing input",
-      error,
-    });
+      });
+    } catch (error) {
+      res.status(411).json({
+        message: " Incorrect listing input",
+        error,
+      });
+    }
   }
-}
 );
 
 module.exports = listingRouter;
